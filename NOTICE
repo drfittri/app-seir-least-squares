@@ -1,0 +1,19 @@
+NOTICE
+======
+
+This repository hosts a copy of the following work:
+
+  Repository : app-seir-least-squares
+  Author     : Spectrum Spark
+  URL        : https://github.com/spectrum-spark/app-seir-least-squares
+  Upstream   : https://spectrum-spark.github.io/app-seir-least-squares/
+  License    : none declared upstream (all rights reserved by the author)
+
+Modifications in this copy:
+  - app.R: footer credit link added to the Shiny UI
+  - README.md, NOTICE: added
+  - all other files: unmodified, taken from upstream
+
+The authoritative version is the upstream repository. This copy is provided for
+hosting convenience only. If the original author objects, this repository will
+be taken down.

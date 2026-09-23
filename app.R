@@ -87,7 +87,19 @@ ui <- fluidPage(
       )
   )
 )
-    )
+    ),
+
+  tags$hr(),
+  tags$p(
+    style = "text-align:center; color:#7F8C8D; font-size:13px;",
+    "Original app by ",
+    tags$a("Spectrum Spark", href = "https://github.com/spectrum-spark", target = "_blank"),
+    " (",
+    tags$a("app-seir-least-squares", href = "https://github.com/spectrum-spark/app-seir-least-squares", target = "_blank"),
+    "). Hosted copy maintained by ",
+    tags$a("drfittri", href = "https://github.com/drfittri", target = "_blank"),
+    "."
+  )
 )
 
 server <- function(input, output) {
