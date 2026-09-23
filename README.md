@@ -44,7 +44,58 @@ Note: export from a staging directory containing only `app.R`, `DESCRIPTION`
 and `www/`. Exporting the repo root also copies `test_app/` into the site and
 inflates `app.json` to ~129 MB (this is what upstream's published site does).
 
-## Deployment
+## Deploy to Posit Connect
+
+`manifest.json` is committed and ready. It declares `appmode: shiny`, pins R
+`4.5.1`, and lists 46 CRAN packages. Only two content files are listed
+(`app.R`, `www/logo.png`), so the 93 MB `test_app/` directory is never uploaded.
+
+Git-backed deployment: point Connect at this repository's `main` branch. Connect
+reads `manifest.json` to decide what to fetch, so the rest of the repo is
+ignored.
+
+Push-button deployment:
+
+```r
+rsconnect::deployApp(
+  appDir = ".",
+  appFiles = c("app.R", "www/logo.png"),
+  appName = "seir-least-squares"
+)
+```
+
+### Regenerating the manifest
+
+```r
+rsconnect::writeManifest(
+  appDir = ".",
+  appFiles = c("app.R", "www/logo.png"),
+  appMode = "shiny"
+)
+```
+
+Two traps, both hit while creating the committed manifest:
+
+1. **Do not pass `DESCRIPTION` in `appFiles`.** `DESCRIPTION` declares
+   `Package: sirleastsquares`, which makes rsconnect treat the directory as an R
+   package and inject a `.Rbuildignore` entry into the manifest. That file does
+   not exist, so Connect rejects the deployment. `DESCRIPTION` exists only for
+   the Shinylive export path and is not needed by Connect.
+2. **`munsell` must be installed locally when regenerating.** `app.R` contains a
+   dead `if (FALSE) { library(munsell) }` block, which dependency scanning still
+   detects. If the package is absent, renv cannot pin its version and the
+   manifest is incomplete. Install it into a scratch library first:
+   ```r
+   .libPaths(c("/tmp/rlib", .libPaths()))
+   install.packages("munsell", lib = "/tmp/rlib")
+   ```
+   (`shinythemes` is declared in `DESCRIPTION` but never used, so it is
+   correctly absent from the manifest.)
+
+If the Connect server does not have R 4.5.1, either install that R version there
+or edit `platform` in `manifest.json` to match an available version.
+
+## Deployment (GitHub Pages)
 
 GitHub Pages is served from the `gh-pages` branch
 (Settings -> Pages -> Source: `gh-pages` / root). `.nojekyll` is included.
