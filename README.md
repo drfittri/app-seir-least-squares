@@ -40,8 +40,30 @@ Then serve `_site/` over HTTP (`python3 -m http.server`). Opening
 `_site/index.html` directly from disk will not work: Shinylive needs HTTP for
 its service worker and asset fetches.
 
+Note: export from a staging directory containing only `app.R`, `DESCRIPTION`
+and `www/`. Exporting the repo root also copies `test_app/` into the site and
+inflates `app.json` to ~129 MB (this is what upstream's published site does).
+
 ## Deployment
 
-GitHub Pages is served from the `gh-pages` branch of this repository
-(Settings -> Pages -> Source: `gh-pages` / root). Rebuild with the command above
-and push the contents of `_site/` to that branch.
+GitHub Pages is served from the `gh-pages` branch
+(Settings -> Pages -> Source: `gh-pages` / root). `.nojekyll` is included.
+
+Two ways to deploy:
+
+1. **Manually.** Run the export above, then push the contents of `_site/` to the
+   `gh-pages` branch.
+2. **Workflow.** `.github/workflows/build_and_deploy_app.yml` rebuilds and
+   publishes on every push to `main`. It is the upstream workflow rewritten to
+   deploy to the `gh-pages` branch.
+
+   GitHub disables Actions on forks until the owner enables them once: open the
+   **Actions** tab of this repository and click "I understand my workflows, go
+   ahead and enable them". Until that is done, use route 1.
+
+## First-load time
+
+The first visit downloads roughly 88 MB of WebAssembly assets and then boots R
+in the browser before the app appears, so expect tens of seconds. Later visits
+are served from the service worker cache. This is inherent to Shinylive, not a
+misconfiguration.
